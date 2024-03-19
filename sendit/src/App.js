@@ -1,25 +1,39 @@
-import React from "react";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'; // Import BrowserRouter as Router
+import React, { useState, useEffect } from "react";
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import LoginForm from './Components/LoginForm';
 import SignupForm from './Components/SignupForm';
 import Delivery from "./Components/Delivery";
-import Home from "./Home";
-import MapSearch from "./Components/MapSearch";
 
+function App() {
+  const [user, setUser] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [refresh, setRefresh] = useState(false);
+  const location = useLocation();
 
+  useEffect(() => {
+    fetch("https://sendit-backend-lje2.onrender.com/session", { credentials: "include" })
+      .then((response) => {
+        console.log("Response status:", response.status);
+        return response.json();
+      })
+      .then((user) => {
+        console.log("User", user);
+        setUser(user);
+      })
+      .catch((error) => {
+        console.log(error.message); 
+      });
+  }, [refresh]);
 
-const App = () => {
-    return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<LoginForm />} />
-                <Route path="/signup" element={<SignupForm />} />
-                <Route path="/delivery" element={<Delivery/>} />
-                <Route path="/mapsearch" element={<MapSearch/>} />
-            </Routes>
-        </Router>
-    );
-};
+  return (
+    <Router>
+      <Routes>
+        <Route path="/login" element={<LoginForm />} />
+        <Route path="/signup" element={<SignupForm />} />
+        <Route path="/delivery" element={<Delivery/>} />
+      </Routes>
+    </Router>
+  );
+}
 
 export default App;
